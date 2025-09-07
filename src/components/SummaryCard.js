@@ -1,6 +1,6 @@
 // src/components/SummaryCard.js
 import React from 'react';
-import { Card, CardContent, Typography, Box } from '@mui/material';
+import { Card, Typography, Box } from '@mui/material';
 
 // We destructure the props right in the function signature for cleaner code
 function SummaryCard({ title, value, icon }) {

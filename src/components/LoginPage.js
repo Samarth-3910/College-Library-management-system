@@ -1,26 +1,43 @@
 // src/components/LoginPage.js
-import React, { useState } from 'react'; // <-- Import useState
+import React, { useState, useContext } from 'react'; // <-- Import useState
 import { Container, Card, Typography, TextField, Button, Box } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { useNavigate } from 'react-router-dom';
+import AuthContext from '../context/AuthContext'; 
 
-function LoginPage() {
-  // --- CONCEPT: State ---
-  // 'state' is a component's memory. We use the 'useState' hook to create state variables.
-  // 'email' will hold the value of the email input. `setEmail` is the function to update it.
-  // It starts as an empty string: useState('').
+function LoginPage({ students }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
+  const { setCurrentUser } = useContext(AuthContext);
 
 
   // --- CONCEPT: Event Handlers ---
   // This function will be called when the user clicks the login button.
   const handleLogin = () => {
-    // For now, we'll just log the values to the browser's console.
-    // In a real app, this is where you would send the data to a server.
-    console.log('Login successful, navigating to dashboard...');
-    navigate('/dashboard');
+    if (email.toLowerCase() === 'librarian@library.com') {
+          setCurrentUser({
+            id: 'L001',
+            name: 'Librarian',
+            role: 'librarian',
+          });
+          navigate('/dashboard');
+          return;
+        }
+        const foundStudent = students.find(
+          (student) => student.email.toLowerCase() === email.toLowerCase()
+    );
+
+    if (foundStudent) {
+      setCurrentUser({
+        ...foundStudent, // Copy all student details
+        role: 'student',    // Add the role property
+      });
+      navigate('/student-dashboard'); // Navigate to the new student dashboard
+      return;
+    }
+
+     alert('Invalid credentials. Please try again.');
   };
 
   return (

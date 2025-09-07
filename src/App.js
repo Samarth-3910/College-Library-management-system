@@ -4,8 +4,15 @@ import LoginPage from './components/LoginPage';
 import DashboardPage from './components/DashboardPage';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import MainLayout from './layouts/MainLayout';
+import StudentLayout from './layouts/StudentLayout';
+import BookCatalogPage from './components/BookCatalogPage';
 import BookManagementPage from './components/BookManagementPage';
 import StudentManagementPage from './components/StudentManagementPage';
+import StudentDashboardPage from './components/StudentDashboardPage';
+import ReservationManagementPage from './components/ReservationManagementPage';
+import AnalyticsPage from './components/AnalyticsPage';
+import { QRCodeUtilityPage } from './components/QRCodeGeneratorPage';
+
 
 
 const initialBooks = [
@@ -28,20 +35,31 @@ function App() {
   const [books, setBooks] = useState(initialBooks);
   const [students, setStudents] = useState(initialStudents);
   const [transactions, setTransactions] = useState([]);
+  const [reservations, setReservations] = useState([]);
+
   return (
     <Routes>
-        <Route path="/login" element={<LoginPage />} />
+        <Route path="/login" element={<LoginPage students={students} />} />
+        <Route path="/" element={<Navigate to="/login" />} />
 
+        {/* --- LIBRARIAN ROUTES --- */}
         <Route element={<MainLayout />}>
+          <Route path="/dashboard" element={<DashboardPage books={books} students={students} setBooks={setBooks} transactions={transactions} setTransactions={setTransactions} reservations={reservations} setReservations={setReservations} />} />
 
-        <Route path="/dashboard" element={<DashboardPage books={books} students={students} setBooks={setBooks} transactions={transactions} setTransactions={setTransactions} />} />
+          <Route path="/books" element={<BookManagementPage books={books} setBooks={setBooks} />} />
 
-        <Route path="/books" element={<BookManagementPage books={books} setBooks={setBooks} />} />
+          <Route path="/students" element={<StudentManagementPage students={students} setStudents={setStudents} />} />
+          <Route path="/reservations" element={<ReservationManagementPage reservations={reservations} books={books} students={students} />} />
+          <Route path="/analytics" element={<AnalyticsPage transactions={transactions} books={books} students={students} />} />
+          <Route path="/qr-utility" element={<QRCodeUtilityPage books={books} students={students} />} />
+        </Route>
 
-        <Route path="/students" element={<StudentManagementPage students={students} setStudents={setStudents} />} />
-    </Route>
-
-      <Route path="/" element={<Navigate to="/login" />} />
+        {/* --- STUDENT ROUTES --- */}
+        <Route element={<StudentLayout />}>
+          <Route path="/student-dashboard"  element={<StudentDashboardPage transactions={transactions} />} />
+          <Route path="/catalog" element={<BookCatalogPage books={books} reservations={reservations} setReservations={setReservations} />}
+          />
+        </Route>
     </Routes>
   );
 }

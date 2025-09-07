@@ -1,17 +1,18 @@
 // src/components/Header.js
 
-import React from 'react';
+import React, { useContext} from 'react';
 // Let's import the components we need from MUI
 import { AppBar, Toolbar, Typography, Button } from '@mui/material';
 import BookIcon from '@mui/icons-material/Book'; // An icon from the icons package
 import { useNavigate } from 'react-router-dom';
+import AuthContext from '../context/AuthContext';
 
 function Header() {
-
+    const { currentUser, setCurrentUser } = useContext(AuthContext);
     const navigate = useNavigate();
 
     const handleLogout = () => {
-      console.log('Logging out...');
+      setCurrentUser(null);
       navigate('/login');
   };
 
@@ -20,12 +21,13 @@ function Header() {
           <Toolbar>
             <BookIcon sx={{ mr: 2 }} />
             <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-              Library Admin
+              Welcome, {currentUser?.name || 'Guest'}
             </Typography>
-            {/* Replaced the Login button with a Logout button */}
+
             <Button color="inherit" onClick={handleLogout}>
               Logout
             </Button>
+
           </Toolbar>
         </AppBar>
       );

@@ -5,7 +5,6 @@ import SummaryCard from './SummaryCard';
 import IssueBookModal from './IssueBookModal';
 import ReturnBookModal from './ReturnBookModal';
 
-
 // Import some icons
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import GroupIcon from '@mui/icons-material/Group';
@@ -19,7 +18,7 @@ import WarningAmberIcon from '@mui/icons-material/WarningAmber';
     overdueBooks: 12,
   };
 
-function DashboardPage({ books, students, setBooks, transactions, setTransactions }) {
+function DashboardPage({ books, students, setBooks, transactions, setTransactions, reservations, setReservations }) {
   const [issueModalOpen, setIssueModalOpen] = useState(false);
 
   const [returnModalOpen, setReturnModalOpen] = useState(false);
@@ -52,22 +51,34 @@ function DashboardPage({ books, students, setBooks, transactions, setTransaction
 
   };
 
-  const handleReturnConfirm = (returnedTransaction) => {
+  const handleReturnConfirm = (returnedTransaction, fineAmount, reservationIdToFulfill) => {
     // 1. Update the book's copy count (increase by 1)
     setBooks(prevBooks =>
-      prevBooks.map(book =>
-        book.id === returnedTransaction.bookId
-          ? { ...book, copies: book.copies + 1 }
-          : book
-      )
+      prevBooks.map(book => {
+        if (book.id === returnedTransaction.bookId) {
+          const newCopies = reservationIdToFulfill ? book.copies : book.copies + 1;
+           return { ...book, copies: newCopies };
+        }
+        return book;
+      })
     );
+
+
     setTransactions(prevTransactions =>
       prevTransactions.map(t =>
         t.id === returnedTransaction.id
-          ? { ...t, returnDate: new Date().toISOString() }
+          ? { ...t, returnDate: new Date().toISOString(), finePaid: fineAmount }
           : t
       )
     );
+
+    if (reservationIdToFulfill) {
+        setReservations(prevReservations =>
+            prevReservations.filter(res => res.id !== reservationIdToFulfill)
+        );
+        // Here you could trigger a real email/SMS notification
+        console.log(`Reservation ${reservationIdToFulfill} has been fulfilled!`);
+    }
   };
 
   return (
@@ -153,6 +164,8 @@ function DashboardPage({ books, students, setBooks, transactions, setTransaction
         onClose={() => setReturnModalOpen(false)}
         transactions={transactions}
         onReturnConfirm={handleReturnConfirm}
+        reservations={reservations}
+        students={students}
       />
     </Box>
   );
