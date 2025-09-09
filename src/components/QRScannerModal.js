@@ -1,4 +1,5 @@
-// src/components/QRScannerModal.js
+
+// QRScannerModal.js - QR Code Scanner Component
 import React from 'react';
 import { QrReader } from 'react-qr-reader';
 import { Dialog, DialogTitle, DialogContent, Box, Typography } from '@mui/material';
@@ -6,11 +7,10 @@ import { Dialog, DialogTitle, DialogContent, Box, Typography } from '@mui/materi
 function QRScannerModal({ open, onClose, onResult }) {
   const handleScan = (result, error) => {
     if (!!result) {
-      onResult(result?.text); // Pass the scanned text back to the parent
-      onClose(); // Close the modal on successful scan
+      onResult(result?.text);
+      onClose();
     }
     if (!!error) {
-      // You can handle errors here if you want
       console.info(error);
     }
   };
@@ -19,7 +19,7 @@ function QRScannerModal({ open, onClose, onResult }) {
     <Dialog open={open} onClose={onClose}>
       <DialogTitle>Scan QR Code</DialogTitle>
       <DialogContent>
-        {open && ( // Only render the QrReader when the dialog is open to activate the camera
+        {open && (
           <Box sx={{ width: '400px', height: '400px' }}>
             <QrReader
               onResult={handleScan}

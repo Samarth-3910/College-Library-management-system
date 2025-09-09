@@ -1,11 +1,9 @@
-// src/components/BookCatalogPage.js
+// BookCatalogPage.js - Student Book Browsing and Reservation
 import React, { useContext } from 'react';
 import { Box, Typography, Grid, Card, CardContent, CardActions, Button, Chip } from '@mui/material';
 import AuthContext from '../context/AuthContext';
 
 function BookCatalogPage({ books, reservations, setReservations }) {
-  // We'll add handleReserve logic later
-
   const { currentUser } = useContext(AuthContext);
 
   const handleReserve = (bookId) => {
@@ -13,7 +11,6 @@ function BookCatalogPage({ books, reservations, setReservations }) {
       alert("Please log in to reserve a book.");
       return;
     }
-
 
     const book = books.find(b => b.id === bookId);
     if (book && book.copies > 0) {
@@ -30,7 +27,7 @@ function BookCatalogPage({ books, reservations, setReservations }) {
     }
 
     const newReservation = {
-      id: `R${Date.now()}`, // Simple unique ID
+      id: `R${Date.now()}`,
       bookId: bookId,
       studentId: currentUser.id,
       date: new Date().toISOString(),
@@ -38,53 +35,42 @@ function BookCatalogPage({ books, reservations, setReservations }) {
 
     setReservations((prevReservations) => [...prevReservations, newReservation]);
     alert("Book reserved successfully! You will be notified when it's available.");
-    console.log("Current Reservations:", [...reservations, newReservation]);
   };
 
   return (
     <Box>
-      <Typography variant="h4" gutterBottom>
-        Book Catalog
-      </Typography>
+      <Typography variant="h4" gutterBottom>Book Catalog</Typography>
       <Grid container spacing={3}>
         {books.map((book) => {
-            const isReservedByUser = reservations.some(
-                (res) => res.bookId === book.id && res.studentId === currentUser?.id
-            );
+          const isReservedByUser = reservations.some(
+            (res) => res.bookId === book.id && res.studentId === currentUser?.id
+          );
 
-            return (
-          <Grid item xs={12} sm={6} md={4} lg={3} key={book.id}>
-            <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-              <CardContent sx={{ flexGrow: 1 }}>
-                <Typography variant="h6" component="div">
-                  {book.title}
-                </Typography>
-                <Typography sx={{ mb: 1.5 }} color="text.secondary">
-                  by {book.author}
-                </Typography>
-                <Chip label={book.genre} variant="outlined" size="small" />
-              </CardContent>
-              <CardActions>
-                {book.copies > 0 ? (
-                  <Chip
-                    label={`Available (${book.copies})`}
-                    color="success"
-                    variant="filled"
-                  />
-                ) : (
-                  <Button
-                    size="small"
-                    variant="contained"
-                    onClick={() => handleReserve(book.id)}
-                    disabled={isReservedByUser}
-                  >
-                    {isReservedByUser ? 'Reserved' : 'Reserve'}
-                  </Button>
-                )}
-              </CardActions>
-            </Card>
-          </Grid>
-            );
+          return (
+            <Grid item xs={12} sm={6} md={4} lg={3} key={book.id}>
+              <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                <CardContent sx={{ flexGrow: 1 }}>
+                  <Typography variant="h6" component="div">{book.title}</Typography>
+                  <Typography sx={{ mb: 1.5 }} color="text.secondary">by {book.author}</Typography>
+                  <Chip label={book.genre} variant="outlined" size="small" />
+                </CardContent>
+                <CardActions>
+                  {book.copies > 0 ? (
+                    <Chip label={`Available (${book.copies})`} color="success" variant="filled" />
+                  ) : (
+                    <Button
+                      size="small"
+                      variant="contained"
+                      onClick={() => handleReserve(book.id)}
+                      disabled={isReservedByUser}
+                    >
+                      {isReservedByUser ? 'Reserved' : 'Reserve'}
+                    </Button>
+                  )}
+                </CardActions>
+              </Card>
+            </Grid>
+          );
         })}
       </Grid>
     </Box>

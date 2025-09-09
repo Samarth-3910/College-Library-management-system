@@ -1,21 +1,20 @@
-// src/components/SummaryCard.js
+// SummaryCard.js - Dashboard Statistics Display
 import React from 'react';
 import { Card, Typography, Box } from '@mui/material';
 
-// We destructure the props right in the function signature for cleaner code
 function SummaryCard({ title, value, icon }) {
   return (
     <Card sx={{ display: 'flex', alignItems: 'center', p: 2 }}>
       <Box sx={{
-          p: 2,
-          mr: 2,
-          backgroundColor: 'primary.main', // Uses the main theme color
-          color: 'white',
-          borderRadius: '50%', // Makes it a circle
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center'
-        }}>
+        p: 2,
+        mr: 2,
+        backgroundColor: 'primary.main',
+        color: 'white',
+        borderRadius: '50%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}>
         {icon}
       </Box>
       <Box>

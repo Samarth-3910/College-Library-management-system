@@ -1,3 +1,4 @@
+/* App.test.js - Basic Application Tests */
 import { render, screen } from '@testing-library/react';
 import App from './App';
 

@@ -1,9 +1,8 @@
-// src/components/StudentDashboardPage.js
+// StudentDashboardPage.js - Student Portal with Borrowing Info
 import React, { useState, useMemo, useContext } from 'react';
 import { Box, Typography, Tabs, Tab, Card, CardContent, Grid } from '@mui/material';
 import AuthContext from '../context/AuthContext';
 
-// A simple component for each tab's content
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
   return (
@@ -21,12 +20,10 @@ function StudentDashboardPage({ transactions }) {
     setTabValue(newValue);
   };
 
-  // Filter transactions for the current user using useMemo for efficiency
   const { currentLoans, loanHistory } = useMemo(() => {
     if (!currentUser) return { currentLoans: [], loanHistory: [] };
 
     const userTransactions = transactions.filter(t => t.studentId === currentUser.id);
-
     const currentLoans = userTransactions.filter(t => t.returnDate === null);
     const loanHistory = userTransactions.filter(t => t.returnDate !== null);
 
@@ -50,7 +47,6 @@ function StudentDashboardPage({ transactions }) {
         </Tabs>
       </Box>
 
-      {/* Currently Borrowed Tab */}
       <TabPanel value={tabValue} index={0}>
         <Grid container spacing={3}>
           {currentLoans.length > 0 ? (
@@ -82,7 +78,6 @@ function StudentDashboardPage({ transactions }) {
         </Grid>
       </TabPanel>
 
-      {/* Borrowing History Tab */}
       <TabPanel value={tabValue} index={1}>
         {loanHistory.length > 0 ? (
           loanHistory.map(loan => (

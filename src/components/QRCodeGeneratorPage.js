@@ -1,4 +1,4 @@
-// src/components/QRCodeGeneratorPage.js
+// QRCodeGeneratorPage.js - QR Code Generation Utility
 import React, { useEffect, useState } from 'react';
 import QRCode from 'qrcode';
 import { Box, Typography, Grid, Paper, Button } from '@mui/material';
@@ -11,7 +11,6 @@ function QRCodeGeneratorPage({ items, title, dataKey }) {
       const urls = {};
       for (const item of items) {
         try {
-          // We generate a data URL for the QR code image
           const url = await QRCode.toDataURL(item.id);
           urls[item.id] = url;
         } catch (err) {
@@ -24,7 +23,7 @@ function QRCodeGeneratorPage({ items, title, dataKey }) {
     if (items.length > 0) {
       generateQRCodes();
     }
-  }, [items]); // Re-run if the items list changes
+  }, [items]);
 
   return (
     <Paper sx={{ p: 2, mb: 3 }}>
@@ -58,13 +57,12 @@ function QRCodeGeneratorPage({ items, title, dataKey }) {
   );
 }
 
-// A wrapper component to show both sections
 export function QRCodeUtilityPage({ books, students }) {
-    return (
-        <Box>
-            <Typography variant="h4" gutterBottom>QR Code Generation Utility</Typography>
-            <QRCodeGeneratorPage items={students} title="Student IDs" dataKey="name" />
-            <QRCodeGeneratorPage items={books} title="Book ISBNs" dataKey="title" />
-        </Box>
-    )
+  return (
+    <Box>
+      <Typography variant="h4" gutterBottom>QR Code Generation Utility</Typography>
+      <QRCodeGeneratorPage items={students} title="Student IDs" dataKey="name" />
+      <QRCodeGeneratorPage items={books} title="Book ISBNs" dataKey="title" />
+    </Box>
+  );
 }
