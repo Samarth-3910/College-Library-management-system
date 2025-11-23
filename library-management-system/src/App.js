@@ -1,4 +1,4 @@
-// App.js - Main Application Component, now acting only as a router
+// App.js - Main Application Component with Register Route
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 
@@ -16,17 +16,13 @@ import MainLayout from './layouts/MainLayout';
 import StudentLayout from './layouts/StudentLayout';
 
 function App() {
-  // All data state (books, students, etc.) has been removed.
-  // The backend database is now the single source of truth.
-  // Each component is now responsible for fetching the data it needs.
-
   return (
     <Routes>
+      {/* Public Routes */}
       <Route path="/login" element={<LoginPage />} />
       <Route path="/" element={<Navigate to="/login" />} />
 
       {/* --- LIBRARIAN ROUTES --- */}
-      {/* These routes no longer pass any data props. */}
       <Route element={<MainLayout />}>
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/books" element={<BookManagementPage />} />
