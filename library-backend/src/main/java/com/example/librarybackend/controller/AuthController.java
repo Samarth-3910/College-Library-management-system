@@ -1,5 +1,6 @@
 package com.example.librarybackend.controller;
 
+//Purpose: Handles user login (librarian and students).
 import com.example.librarybackend.dto.LoginRequest;
 import com.example.librarybackend.dto.LoginResponse;
 import com.example.librarybackend.model.Student;
@@ -13,9 +14,17 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Optional;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:3000")
-@RequestMapping("/api/auth")
+//Combines @Controller + @ResponseBody
+//Methods return data (JSON), not views (HTML)
+
+@CrossOrigin(origins = "http://localhost:3000") //CORS: Allows React app (port 3000) to call this API (port 8080)
+
+@RequestMapping("/api/auth") //Base URL for all methods
 public class AuthController {
+
+
+//    @Autowired: Spring automatically provides the repository
+//    No need to create new StudentRepository()
 
     @Autowired
     private StudentRepository studentRepository;
@@ -30,7 +39,7 @@ public class AuthController {
             "$2a$10$xLzKcF4dDQKLLLzKcF4dDO9qj6kqJ8dQKLLLzKcF4dDO9qj6kqJ8d";
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) { //Deserializes JSON to LoginRequest object
         String email = loginRequest.getEmail();
         String password = loginRequest.getPassword();
 

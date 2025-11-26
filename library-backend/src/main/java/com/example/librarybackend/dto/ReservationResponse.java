@@ -1,11 +1,7 @@
 package com.example.librarybackend.dto;
 
 import java.time.LocalDateTime;
-
-/**
- * DTO for sending reservation data to frontend
- * Contains flat structure with IDs instead of nested objects
- */
+//Sends reservation details to frontend.
 public class ReservationResponse {
     private Integer id;
     private String bookId;

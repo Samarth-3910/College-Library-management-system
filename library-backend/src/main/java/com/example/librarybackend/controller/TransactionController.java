@@ -4,10 +4,11 @@ import com.example.librarybackend.dto.TransactionDto;
 import com.example.librarybackend.dto.TransactionResponse;
 import com.example.librarybackend.exception.ResourceNotFoundException;
 import com.example.librarybackend.model.Book;
-import com.example.librarybackend.model.Reservation;
+import com.example.librarybackend.model.Notification;
 import com.example.librarybackend.model.Student;
 import com.example.librarybackend.model.Transaction;
 import com.example.librarybackend.repository.BookRepository;
+import com.example.librarybackend.repository.NotificationRepository;
 import com.example.librarybackend.repository.ReservationRepository;
 import com.example.librarybackend.repository.StudentRepository;
 import com.example.librarybackend.repository.TransactionRepository;
@@ -26,12 +27,22 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/transactions")
 public class TransactionController {
 
-    @Autowired private TransactionRepository transactionRepository;
-    @Autowired private BookRepository bookRepository;
-    @Autowired private StudentRepository studentRepository;
-    @Autowired private ReservationRepository reservationRepository;
+    @Autowired
+    private TransactionRepository transactionRepository;
+    @Autowired
+    private BookRepository bookRepository;
+    @Autowired
+    private StudentRepository studentRepository;
+    @Autowired
+    private ReservationRepository reservationRepository;
+    @Autowired
+    private NotificationRepository notificationRepository;
 
     // Helper method to convert Transaction Entity to TransactionResponse DTO
+    //Convert entity to DTO
+    //
+    //Flattens nested objects
+    //Extracts book title and student name
     private TransactionResponse convertToDto(Transaction transaction) {
         TransactionResponse dto = new TransactionResponse();
         dto.setId(transaction.getId());
@@ -47,6 +58,7 @@ public class TransactionController {
     }
 
     // GET all transactions
+    //Converts each transaction to DTO
     @GetMapping
     public List<TransactionResponse> getAllTransactions() {
         return transactionRepository.findAll().stream()
@@ -74,7 +86,9 @@ public class TransactionController {
         book.setCopies(book.getCopies() - 1);
         bookRepository.save(book);
 
-        // Create new transaction
+        // Create new transaction with
+        //Issue date: now
+        //Due date: 15 days from now
         Transaction transaction = new Transaction();
         transaction.setBook(book);
         transaction.setStudent(student);
@@ -82,11 +96,21 @@ public class TransactionController {
         transaction.setDueDate(LocalDateTime.now().plusDays(15)); // 15 days loan period
 
         Transaction savedTransaction = transactionRepository.save(transaction);
+
+        // Create notification for student
+        Notification notification = new Notification();
+        notification.setUserId(student.getId());
+        notification.setMessage("Book issued: \"" + book.getTitle() + "\". Due date: " +
+                savedTransaction.getDueDate().toLocalDate());
+        notification.setType("BOOK_ISSUED");
+        notification.setRelatedBookId(book.getId());
+        notification.setRelatedTransactionId(savedTransaction.getId());
+        notificationRepository.save(notification);
+
         return ResponseEntity.ok(convertToDto(savedTransaction));
     }
 
     // PUT - Return a book (Update Transaction)
-    // THIS WAS MISSING! This is critical for returning books
     @PutMapping("/{id}")
     public ResponseEntity<TransactionResponse> returnBook(
             @PathVariable Integer id,
@@ -129,6 +153,22 @@ public class TransactionController {
         }
 
         Transaction updatedTransaction = transactionRepository.save(transaction);
+
+        // Create notification for student
+        Student student = transaction.getStudent();
+        String notificationMessage = "Book returned: \"" + book.getTitle() + "\"";
+        if (transaction.getFinePaid() != null && transaction.getFinePaid().compareTo(BigDecimal.ZERO) > 0) {
+            notificationMessage += ". Fine paid: $" + transaction.getFinePaid();
+        }
+
+        Notification notification = new Notification();
+        notification.setUserId(student.getId());
+        notification.setMessage(notificationMessage);
+        notification.setType("BOOK_RETURNED");
+        notification.setRelatedBookId(book.getId());
+        notification.setRelatedTransactionId(updatedTransaction.getId());
+        notificationRepository.save(notification);
+
         return ResponseEntity.ok(convertToDto(updatedTransaction));
     }
 }

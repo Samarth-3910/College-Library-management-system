@@ -2,7 +2,7 @@ package com.example.librarybackend.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-
+//Sends transaction details to frontend.
 public class TransactionResponse {
     private Integer id;
     private String bookId;

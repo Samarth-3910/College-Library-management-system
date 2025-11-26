@@ -43,6 +43,7 @@ public class BookController {
     @PostMapping
     public Book addBook(@RequestBody Book book) {
         // The save() method handles both creating new items and updating existing ones.
+        //save() inserts into database
         return bookRepository.save(book);
     }
 

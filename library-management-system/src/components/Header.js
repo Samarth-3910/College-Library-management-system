@@ -1,10 +1,9 @@
 // Header.js - Enhanced Professional Header Component
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect, useCallback } from 'react';
 import {
   AppBar,
   Toolbar,
   Typography,
-  Button,
   Avatar,
   IconButton,
   Menu,
@@ -23,6 +22,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { useNavigate } from 'react-router-dom';
 import AuthContext from '../context/AuthContext';
+import NotificationPanel from './NotificationPanel';
 
 const StyledAppBar = styled(AppBar)(({ theme }) => ({
   background: 'linear-gradient(135deg, #1976d2 0%, #1565c0 100%)',
@@ -119,7 +119,10 @@ function Header() {
   const { currentUser, setCurrentUser } = useContext(AuthContext);
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
+  const [notificationAnchorEl, setNotificationAnchorEl] = useState(null);
+  const [notificationCount, setNotificationCount] = useState(0);
   const open = Boolean(anchorEl);
+  const notificationOpen = Boolean(notificationAnchorEl);
 
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -141,6 +144,40 @@ function Header() {
     } else if (currentUser?.role === 'student') {
       navigate('/student-dashboard');
     }
+  };
+
+  const fetchNotificationCount = useCallback(async () => {
+    if (!currentUser?.id) return;
+
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/notifications/user/${currentUser.id}/unread/count`
+      );
+      const data = await response.json();
+      setNotificationCount(data.count || 0);
+    } catch (error) {
+      console.error('Failed to fetch notification count:', error);
+    }
+  }, [currentUser?.id]);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (!currentUser?.id) return;
+
+    fetchNotificationCount();
+
+    const interval = setInterval(fetchNotificationCount, 30000);
+    return () => clearInterval(interval);
+
+  }, [currentUser?.id, fetchNotificationCount]);
+
+  const handleNotificationClick = (event) => {
+    setNotificationAnchorEl(event.currentTarget);
+  };
+
+  const handleNotificationClose = () => {
+    setNotificationAnchorEl(null);
+    fetchNotificationCount();
   };
 
   // Get user initials for avatar
@@ -194,8 +231,8 @@ function Header() {
           </WelcomeText>
 
           {/* Notifications */}
-          <StyledIconButton size="small">
-            <Badge badgeContent={0} color="error">
+          <StyledIconButton size="small" onClick={handleNotificationClick}>
+            <Badge badgeContent={notificationCount} color="error">
               <NotificationsIcon />
             </Badge>
           </StyledIconButton>
@@ -272,6 +309,12 @@ function Header() {
           </StyledMenu>
         </UserSection>
       </Toolbar>
+
+      <NotificationPanel
+        anchorEl={notificationAnchorEl}
+        open={notificationOpen}
+        onClose={handleNotificationClose}
+      />
     </StyledAppBar>
   );
 }

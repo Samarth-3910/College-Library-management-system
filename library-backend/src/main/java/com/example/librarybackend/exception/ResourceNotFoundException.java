@@ -9,3 +9,6 @@ public class ResourceNotFoundException extends RuntimeException {
         super(message);
     }
 }
+
+//Extends RuntimeException (unchecked exception)
+//Accepts custom error message

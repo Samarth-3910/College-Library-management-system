@@ -1,5 +1,6 @@
 package com.example.librarybackend.dto;
 
+//Receives book issue request from frontend.
 public class TransactionDto {
     private String bookId;
     private String studentId;
